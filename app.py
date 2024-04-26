@@ -3,10 +3,12 @@ from repository.database import db
 from db_models.payment import Payment
 from datetime import datetime, timedelta
 from payments.pix import Pix
+from flask_socketio import SocketIO
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 app.config["SECRET_KEY"] = "SECRET_KEY_WEBSOCKET"
+socketio = SocketIO(app)
 
 db.init_app(app)
 
@@ -53,5 +55,11 @@ def payment_pix_page(payment_id):
                            qr_code=payment.qr_code)
 
 
+#websockets
+@socketio.on("connect")
+def handle_connect():
+    print("Client connected to the server.")
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    socketio.run(app, debug=True)
